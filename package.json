@@ -1,15 +1,19 @@
 {
   "name": "maximum-matching",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Implementation of Blossom's Algorithm for Maximum Matching",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist/**/*"
+  ],
   "repository": "https://github.com/juliocastrodev/maximum-matching",
   "author": "Julio César Castro López <julio.castro.dev@gmail.com>",
   "license": "MIT",
   "scripts": {
     "build": "tsc",
     "test": "jest",
+    "prepublish": "yarn build",
     "typecheck": "tsc --noEmit",
     "lint": "eslint . --ext .ts",
     "run-checks": "yarn typecheck && yarn lint"
