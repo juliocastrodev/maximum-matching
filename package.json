@@ -1,9 +1,9 @@
 {
   "name": "maximum-matching",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Implementation of Blossom's Algorithm for Maximum Matching",
   "main": "src/index.ts",
-  "repository": "git@github.com:juliocastrodev/maximum-matching.git",
+  "repository": "https://github.com/UserName/package-name.git",
   "author": "Julio César Castro López <julio.castro.dev@gmail.com>",
   "license": "MIT",
   "scripts": {
