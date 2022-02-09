@@ -1,5 +1,5 @@
 {
-  "name": "maximum-matching",
+ "name": "maximum-matching",
   "version": "1.0.5",
   "description": "Implementation of Blossom's Algorithm for Maximum Matching",
   "main": "dist/index.js",
