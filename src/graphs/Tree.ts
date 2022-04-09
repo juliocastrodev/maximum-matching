@@ -1,4 +1,4 @@
-import { Node } from '../Node'
+import { Node } from './Node'
 
 type TreeConstructor = {
   parent?: Tree
