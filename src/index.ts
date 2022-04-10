@@ -1,3 +1,4 @@
-import { foo } from './foo'
+import { maximumMatching, maximumMatchingGraph } from './matchings/algorithm/maximumMatching'
+import { MatchingGraph } from './matchings/algorithm/MatchingGraph'
 
-export { foo }
+export { maximumMatching, maximumMatchingGraph, MatchingGraph }
