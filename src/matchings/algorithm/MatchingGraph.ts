@@ -32,17 +32,12 @@ export class MatchingGraph extends UndirectedGraph<MatchingNodeAttributes, Match
   }
 
   pair(node1: Node, node2: Node) {
-    this.ensureIsUnpaired(node1)
-    this.ensureIsUnpaired(node2)
-
     const edge = this.edgeOrFail(node1, node2)
 
     this.setEdgeAttribute(edge, 'arePaired', true)
   }
 
   unpair(node1: Node, node2: Node) {
-    this.ensureArePaired(node1, node2)
-
     const edge = this.edgeOrFail(node1, node2)
 
     this.setEdgeAttribute(edge, 'arePaired', false)
@@ -141,16 +136,5 @@ export class MatchingGraph extends UndirectedGraph<MatchingNodeAttributes, Match
     if (!edge) throw new NotFoundGraphError(`nodes ${node1}, ${node2} are not neighbors`)
 
     return edge
-  }
-
-  private ensureIsUnpaired(node: Node) {
-    if (this.isPaired(node)) throw new UsageGraphError(`node ${node} is paired`)
-  }
-
-  private ensureArePaired(node1: Node, node2: Node) {
-    const edge = this.edgeOrFail(node1, node2)
-
-    if (!this.getEdgeAttribute(edge, 'arePaired'))
-      throw new UsageGraphError(`nodes ${node1}, ${node2} are unpaired`)
   }
 }

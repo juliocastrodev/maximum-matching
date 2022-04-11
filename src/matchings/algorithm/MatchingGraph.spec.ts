@@ -79,14 +79,6 @@ describe('MatchingGraph', () => {
       })
     })
 
-    describe('when one of the nodes is paired', () => {
-      it('throws an error', () => {
-        graph.pair('1', '3')
-
-        expect(() => graph.pair('1', '2')).toThrowError('node 1 is paired')
-      })
-    })
-
     describe('when nodes are not neighbors', () => {
       it('throws an error', () => {
         expect(() => graph.pair('3', '2')).toThrowError('nodes 3, 2 are not neighbors')
@@ -129,12 +121,6 @@ describe('MatchingGraph', () => {
         expect(() => graph.unpair('1', 'x')).toThrowError(
           'could not find the "1" source node in the graph.'
         )
-      })
-    })
-
-    describe('when nodes are unpaired', () => {
-      it('throws an error', () => {
-        expect(() => graph.unpair('x', 'y')).toThrowError('nodes x, y are unpaired')
       })
     })
 

@@ -1,6 +1,6 @@
 {
   "name": "maximum-matching",
-  "version": "1.0.9",
+  "version": "1.0.10",
   "description": "Implementation of Blossom's Algorithm for Maximum Matching",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -13,7 +13,7 @@
   "scripts": {
     "build": "tsc",
     "test": "jest",
-    "prepublish": "yarn build",
+    "prepublish": "yarn test && yarn build",
     "typecheck": "tsc --noEmit",
     "lint": "eslint . --ext .ts",
     "run-checks": "yarn typecheck && yarn lint"
