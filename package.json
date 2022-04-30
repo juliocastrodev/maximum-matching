@@ -1,6 +1,6 @@
 {
   "name": "maximum-matching",
-  "version": "1.0.10",
+  "version": "1.0.12",
   "description": "Implementation of Blossom's Algorithm for Maximum Matching",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -8,6 +8,7 @@
     "dist/**/*"
   ],
   "repository": "https://github.com/juliocastrodev/maximum-matching",
+  "homepage": "https://github.com/juliocastrodev/maximum-matching#readme",
   "author": "Julio César Castro López <julio.castro.dev@gmail.com>",
   "license": "MIT",
   "scripts": {
