@@ -1,6 +1,6 @@
 {
   "name": "maximum-matching",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "Implementation of Blossom's Algorithm for Maximum Matching",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
