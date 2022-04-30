@@ -1,6 +1,6 @@
 # Typescript Maximum Matching 📘
 
-Implementation of [Blossom's Algorithm](https://en.wikipedia.org/wiki/Blossom_algorithm) for Maximum Matching with [graphology](https://github.com/graphology/graphology)
+Implementation of [Blossom's Algorithm](https://en.wikipedia.org/wiki/Blossom_algorithm) for a maximum matching in graphs with Typescript and [graphology](https://github.com/graphology/graphology)
 
 ## Installation 💾
 
@@ -16,7 +16,7 @@ npm install maximum-matching
 
 ## Usage 🔬
 
-First we need to create our graph. You can use a regular one from [grapholoy](https://graphology.github.io/) or our [MatchingGraph](./src/matchings/algorithm/MatchingGraph.ts)
+First we need to create our graph. You can use a regular one from [graphology](https://graphology.github.io/) or our [MatchingGraph](./src/matchings/algorithm/MatchingGraph.ts)
 
 ```ts
 import { MatchingGraph } from 'maximum-matching'
