@@ -1,11 +1,19 @@
 {
   "name": "maximum-matching",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "Implementation of Blossom's Algorithm for Maximum Matching",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
     "dist/**/*"
+  ],
+  "keywords": [
+    "graph",
+    "graphology",
+    "edmonds",
+    "blossom",
+    "maximum",
+    "matching"
   ],
   "repository": "https://github.com/juliocastrodev/maximum-matching",
   "homepage": "https://github.com/juliocastrodev/maximum-matching#readme",

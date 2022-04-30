@@ -83,7 +83,7 @@ const unpairedNodes = resultGraph.unpairedNodes()
 
 calling the `.matching()` method in the resulting graph is the same thing as using the `maximumMatching` function directly.
 
-## Theory
+## Theory 🎓
 
 Formal proof: [Stanford University](https://stanford.edu/~rezab/classes/cme323/S16/projects_reports/shoemaker_vare.pdf)
 
