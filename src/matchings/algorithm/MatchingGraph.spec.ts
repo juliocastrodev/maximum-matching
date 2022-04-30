@@ -1,4 +1,5 @@
 import Graph, { NotFoundGraphError } from 'graphology'
+import { Blossom } from '../blossoms/Blossom'
 import { MatchingGraph } from './MatchingGraph'
 
 describe('MatchingGraph', () => {
@@ -43,7 +44,73 @@ describe('MatchingGraph', () => {
   })
 
   describe('createCompressing', () => {
-    // TODO
+    beforeEach(() => {
+      //  a ---- b
+      //  ||    ||            a ---- b
+      //   1 --- c    --->   ||      ||
+      //  / \                 * ---- c
+      //  2  5
+      // ||  ||
+      // 3 -- 4
+
+      graph = new MatchingGraph()
+
+      graph.addNode('1')
+      graph.addNode('2')
+      graph.addNode('3')
+      graph.addNode('4')
+      graph.addNode('5')
+      graph.addNode('a')
+      graph.addNode('b')
+      graph.addNode('c')
+
+      graph.addEdge('1', '2')
+      graph.addEdge('2', '3')
+      graph.addEdge('3', '4')
+      graph.addEdge('4', '5')
+      graph.addEdge('5', '1')
+      graph.addEdge('1', 'a')
+      graph.addEdge('a', 'b')
+      graph.addEdge('b', 'c')
+      graph.addEdge('c', '1')
+
+      graph.pair('2', '3')
+      graph.pair('5', '4')
+      graph.pair('a', '1')
+      graph.pair('b', 'c')
+    })
+
+    describe('when passing a blossom with nodes that are not in the graph', () => {
+      it('throws an error', () => {
+        expect(() =>
+          MatchingGraph.createCompressing(
+            graph,
+            new Blossom({ root: 'Julio', cycle: ['Julio', 'Agosto', 'Septiembre'] })
+          )
+        ).toThrowError(NotFoundGraphError)
+      })
+    })
+
+    describe('when passing a compatible blossom', () => {
+      it('compress it', () => {
+        const blossom = new Blossom({ root: '1', cycle: ['1', '2', '3', '4', '5'] })
+        const expectedGraph = new MatchingGraph()
+        expectedGraph.addNode('1-2-3-4-5')
+        expectedGraph.addNode('a')
+        expectedGraph.addNode('b')
+        expectedGraph.addNode('c')
+        expectedGraph.addEdge('1-2-3-4-5', 'a')
+        expectedGraph.addEdge('a', 'b')
+        expectedGraph.addEdge('b', 'c')
+        expectedGraph.addEdge('c', '1-2-3-4-5')
+        expectedGraph.pair('a', '1-2-3-4-5')
+        expectedGraph.pair('b', 'c')
+
+        const result = MatchingGraph.createCompressing(graph, blossom)
+
+        expect(result).toEqual(expectedGraph)
+      })
+    })
   })
 
   describe('pair', () => {
@@ -557,10 +624,92 @@ describe('MatchingGraph', () => {
   })
 
   describe('compress', () => {
-    // TODO
+    beforeEach(() => {
+      // x - 1 = 2 - y     --->    x - * - y
+      //     \  /
+      //      3
+
+      graph = new MatchingGraph()
+
+      graph.addNode('1')
+      graph.addNode('2')
+      graph.addNode('3')
+      graph.addNode('x')
+      graph.addNode('y')
+
+      graph.addEdge('1', '2')
+      graph.addEdge('2', '3')
+      graph.addEdge('3', '1')
+      graph.addEdge('1', 'x')
+      graph.addEdge('2', 'y')
+
+      graph.pair('1', '2')
+    })
+
+    describe('when passing a blossom with nodes that are not in the graph', () => {
+      it('throws an error', () => {
+        expect(() =>
+          graph.compress(new Blossom({ root: 'x0', cycle: ['x0', 'x1', 'x2', 'x3', 'x4'] }))
+        ).toThrowError(NotFoundGraphError)
+      })
+    })
+
+    describe('when passing a compatible blossom', () => {
+      it('compress it', () => {
+        const blossom = new Blossom({ root: '3', cycle: ['1', '2', '3'] })
+        const expectedGraph = new MatchingGraph()
+        expectedGraph.addNode('1-2-3')
+        expectedGraph.addNode('x')
+        expectedGraph.addNode('y')
+        expectedGraph.addEdge('x', '1-2-3')
+        expectedGraph.addEdge('1-2-3', 'y')
+
+        const result = MatchingGraph.createCompressing(graph, blossom)
+
+        expect(result).toEqualMatchingGraph(expectedGraph)
+      })
+    })
   })
 
   describe('isSuperNode', () => {
-    // TODO
+    beforeEach(() => {
+      //  1 = 2 - x     --->    * - x
+      //   \  /
+      //    3
+
+      graph = new MatchingGraph()
+
+      graph.addNode('1')
+      graph.addNode('2')
+      graph.addNode('3')
+      graph.addNode('x')
+
+      graph.addEdge('x', '2')
+      graph.addEdge('2', '3')
+      graph.addEdge('3', '1')
+      graph.addEdge('1', '2')
+
+      graph.pair('1', '2')
+
+      graph.compress(new Blossom({ root: '3', cycle: ['3', '2', '1'] }))
+    })
+
+    describe('when node is a super node', () => {
+      it('returns true', () => {
+        expect(graph.isSuperNode('3-2-1')).toEqual(true)
+      })
+    })
+
+    describe('when node is not a super node', () => {
+      it('returns false', () => {
+        expect(graph.isSuperNode('x')).toEqual(false)
+      })
+    })
+
+    describe('when node is not in the graph', () => {
+      it('throws an error', () => {
+        expect(() => graph.isSuperNode('_')).toThrowError(NotFoundGraphError)
+      })
+    })
   })
 })
