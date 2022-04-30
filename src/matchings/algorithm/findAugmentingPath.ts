@@ -56,7 +56,7 @@ class AugmentingPathFinder {
   }
 
   private visitNodeOutsideForest(currentNode: Node, outsider: Node) {
-    const outsiderMate = this.graph.getMate(outsider)
+    const outsiderMate = this.graph.getMateOrFail(outsider)
 
     this.forest.findSubtreeOrFail(currentNode).addChild(outsider).addChild(outsiderMate)
 
@@ -122,11 +122,14 @@ class AugmentingPathFinder {
     const { blossom, previousNode, nextNode } = params
     const { root, cycle } = blossom
 
-    const rootMate = this.graph.isPaired(root) ? this.graph.getMate(root) : undefined
+    const rootMate = this.graph.getMate(root)
 
     const connectionFor = (node?: Node) =>
       !node || node === rootMate ? root : this.graph.findNeighborOrFail({ for: node, in: cycle })
 
-    return blossom.evenPath(connectionFor(previousNode), connectionFor(nextNode))
+    const expandedStart = connectionFor(previousNode)
+    const expandedEnd = connectionFor(nextNode)
+
+    return blossom.evenPath(expandedStart, expandedEnd)
   }
 }

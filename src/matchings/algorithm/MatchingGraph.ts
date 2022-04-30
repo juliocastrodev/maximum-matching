@@ -1,7 +1,7 @@
 import Graph, { NotFoundGraphError, UndirectedGraph, UsageGraphError } from 'graphology'
 import { AugmentingPath } from '../AugmentingPath'
 import { Blossom } from '../blossoms/Blossom'
-import { Matching } from '../Mathing'
+import { Matching } from '../Matching'
 import { Node } from '../../graphs/Node'
 
 type MatchingNodeAttributes = {
@@ -63,6 +63,10 @@ export class MatchingGraph extends UndirectedGraph<MatchingNodeAttributes, Match
     return this.matching().flat()
   }
 
+  isPaired(node: Node) {
+    return this.pairedNodes().includes(node)
+  }
+
   unpairedNodes(): Node[] {
     const pairedNodes = this.pairedNodes()
 
@@ -78,13 +82,17 @@ export class MatchingGraph extends UndirectedGraph<MatchingNodeAttributes, Match
   getMate(node: Node) {
     const pairedEdge = this.findEdge(node, (_, { arePaired }) => arePaired)
 
-    if (!pairedEdge) throw new UsageGraphError(`node ${node} is unpaired`)
+    if (!pairedEdge) return undefined
 
     return this.opposite(node, pairedEdge)
   }
 
-  isPaired(node: Node) {
-    return this.pairedNodes().includes(node)
+  getMateOrFail(node: Node) {
+    const mate = this.getMate(node)
+
+    if (!mate) throw new UsageGraphError(`mate for ${node} was not found`)
+
+    return mate
   }
 
   findNeighborOrFail(params: { for: Node; in: Node[] }) {
@@ -101,14 +109,14 @@ export class MatchingGraph extends UndirectedGraph<MatchingNodeAttributes, Match
     const { root, cycle } = blossom
 
     const superNode = cycle.join('-')
-    this.addNode(superNode, { isSuperNode: true })
 
-    const rootMate = this.isPaired(root) ? this.getMate(root) : undefined
+    this.addNode(superNode, { isSuperNode: true })
     this.findBlossomNeighbors(blossom).forEach((superNodeNeighbor) =>
-      this.addEdge(superNode, superNodeNeighbor, {
-        arePaired: superNodeNeighbor === rootMate,
-      })
+      this.addEdge(superNode, superNodeNeighbor)
     )
+
+    const rootMate = this.getMate(root)
+    if (rootMate) this.pair(rootMate, superNode)
 
     cycle.forEach((node) => this.dropNode(node))
   }

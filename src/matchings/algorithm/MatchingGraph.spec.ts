@@ -1,4 +1,4 @@
-import Graph from 'graphology'
+import Graph, { NotFoundGraphError } from 'graphology'
 import { MatchingGraph } from './MatchingGraph'
 
 describe('MatchingGraph', () => {
@@ -132,7 +132,108 @@ describe('MatchingGraph', () => {
   })
 
   describe('augmentWith', () => {
-    // TODO
+    // a - 1 = 2 - 3 = 4 - b
+    //     |       |
+    //     x ===== y
+    beforeEach(() => {
+      graph = new MatchingGraph()
+
+      graph.addNode('a')
+      graph.addNode('b')
+      graph.addNode('x')
+      graph.addNode('y')
+      graph.addNode('1')
+      graph.addNode('2')
+      graph.addNode('3')
+      graph.addNode('4')
+
+      graph.addEdge('a', '1')
+      graph.addEdge('1', '2')
+      graph.addEdge('2', '3')
+      graph.addEdge('3', '4')
+      graph.addEdge('4', 'b')
+      graph.addEdge('x', 'y')
+      graph.addEdge('x', '1')
+      graph.addEdge('y', '3')
+
+      graph.pair('1', '2')
+      graph.pair('3', '4')
+      graph.pair('x', 'y')
+    })
+
+    describe("when the augmenting path doesn't include nodes of the graph", () => {
+      it('throws an error', () => {
+        expect(() => graph.augmentWith(['one', 'two'])).toThrow(NotFoundGraphError)
+      })
+    })
+
+    describe('when the augmenting path includes nodes of the graph', () => {
+      it('alternates pairing/unparing of those nodes', () => {
+        const expectedGraph = MatchingGraph.createFrom(graph)
+        expectedGraph.pair('a', '1')
+        expectedGraph.pair('2', '3')
+        expectedGraph.pair('4', 'b')
+        expectedGraph.pair('x', 'y')
+
+        graph.augmentWith(['a', '1', '2', '3', '4', 'b'])
+
+        expect(graph).toEqualMatchingGraph(expectedGraph)
+      })
+    })
+  })
+
+  describe('matching', () => {
+    describe('when there are only unpaired nodes', () => {
+      // a - b - c
+      // |
+      // d
+      beforeEach(() => {
+        graph = new MatchingGraph()
+
+        graph.addNode('a')
+        graph.addNode('b')
+        graph.addNode('c')
+        graph.addNode('d')
+
+        graph.addEdge('a', 'b')
+        graph.addEdge('b', 'c')
+        graph.addEdge('a', 'd')
+      })
+
+      it('returns an empty matching', () => {
+        expect(graph.matching()).toEqual([])
+      })
+    })
+
+    describe('when there paired nodes', () => {
+      // a - b = c
+      // ||
+      // d
+      beforeEach(() => {
+        graph = new MatchingGraph()
+
+        graph.addNode('a')
+        graph.addNode('b')
+        graph.addNode('c')
+        graph.addNode('d')
+
+        graph.addEdge('a', 'b')
+        graph.addEdge('b', 'c')
+        graph.addEdge('a', 'd')
+
+        graph.pair('b', 'c')
+        graph.pair('a', 'd')
+      })
+
+      it('returns the matching', () => {
+        expect(graph.matching().sort()).toEqual(
+          [
+            ['b', 'c'],
+            ['a', 'd'],
+          ].sort()
+        )
+      })
+    })
   })
 
   describe('pairedNodes', () => {
@@ -190,56 +291,34 @@ describe('MatchingGraph', () => {
     })
   })
 
-  describe('matching', () => {
-    describe('when there are only unpaired nodes', () => {
-      // a - b - c
-      // |
-      // d
-      beforeEach(() => {
-        graph = new MatchingGraph()
+  describe('isPaired', () => {
+    beforeEach(() => {
+      // 1 - 2
+      // | //
+      // 3
+      graph = new MatchingGraph()
 
-        graph.addNode('a')
-        graph.addNode('b')
-        graph.addNode('c')
-        graph.addNode('d')
+      graph.addNode('1')
+      graph.addNode('2')
+      graph.addNode('3')
 
-        graph.addEdge('a', 'b')
-        graph.addEdge('b', 'c')
-        graph.addEdge('a', 'd')
-      })
+      graph.addEdge('1', '2')
+      graph.addEdge('2', '3')
+      graph.addEdge('3', '1')
 
-      it('returns an empty matching', () => {
-        expect(graph.matching()).toEqual([])
+      graph.pair('2', '3')
+    })
+
+    describe('when the node is unpaired', () => {
+      it('returns false', () => {
+        expect(graph.isPaired('1')).toEqual(false)
       })
     })
 
-    describe('when there paired nodes', () => {
-      // a - b = c
-      // ||
-      // d
-      beforeEach(() => {
-        graph = new MatchingGraph()
-
-        graph.addNode('a')
-        graph.addNode('b')
-        graph.addNode('c')
-        graph.addNode('d')
-
-        graph.addEdge('a', 'b')
-        graph.addEdge('b', 'c')
-        graph.addEdge('a', 'd')
-
-        graph.pair('b', 'c')
-        graph.pair('a', 'd')
-      })
-
-      it('returns the matching', () => {
-        expect(graph.matching().sort()).toEqual(
-          [
-            ['b', 'c'],
-            ['a', 'd'],
-          ].sort()
-        )
+    describe('when the node is paired', () => {
+      it('returns true', () => {
+        expect(graph.isPaired('2')).toEqual(true)
+        expect(graph.isPaired('3')).toEqual(true)
       })
     })
   })
@@ -303,10 +382,10 @@ describe('MatchingGraph', () => {
   })
 
   describe('neighborsThroughUnpairedEdges', () => {
-    // 1 - 2 - 3 - 4 = 5
-    //     |       |
-    //     a       b
     beforeEach(() => {
+      // 1 - 2 - 3 - 4 = 5
+      //     |       |
+      //     a       b
       graph = new MatchingGraph()
 
       graph.addNode('1')
@@ -341,10 +420,42 @@ describe('MatchingGraph', () => {
   })
 
   describe('getMate', () => {
-    // 1 - 2 - 3
-    // |       |
-    // a ===== b
     beforeEach(() => {
+      // a = b
+      // | /
+      // c
+      graph = new MatchingGraph()
+
+      graph.addNode('a')
+      graph.addNode('b')
+      graph.addNode('c')
+
+      graph.addEdge('a', 'b')
+      graph.addEdge('a', 'c')
+      graph.addEdge('b', 'c')
+
+      graph.pair('a', 'b')
+    })
+
+    describe('when the node is unpaired', () => {
+      it('returns undefined', () => {
+        expect(graph.getMate('c')).toBeUndefined()
+      })
+    })
+
+    describe('when the node is paired', () => {
+      it('returns its mate', () => {
+        expect(graph.getMate('a')).toEqual('b')
+        expect(graph.getMate('b')).toEqual('a')
+      })
+    })
+  })
+
+  describe('getMateOrFail', () => {
+    beforeEach(() => {
+      // 1 - 2 - 3
+      // |       |
+      // a ===== b
       graph = new MatchingGraph()
 
       graph.addNode('1')
@@ -364,46 +475,14 @@ describe('MatchingGraph', () => {
 
     describe('when the node is unpaired', () => {
       it('throws an error', () => {
-        expect(() => graph.getMate('1')).toThrow('node 1 is unpaired')
+        expect(() => graph.getMateOrFail('1')).toThrow('mate for 1 was not found')
       })
     })
 
     describe('when the node is paired', () => {
       it('returns its mate', () => {
-        expect(graph.getMate('a')).toEqual('b')
-        expect(graph.getMate('b')).toEqual('a')
-      })
-    })
-  })
-
-  describe('isPaired', () => {
-    // 1 - 2
-    // | //
-    // 3
-    beforeEach(() => {
-      graph = new MatchingGraph()
-
-      graph.addNode('1')
-      graph.addNode('2')
-      graph.addNode('3')
-
-      graph.addEdge('1', '2')
-      graph.addEdge('2', '3')
-      graph.addEdge('3', '1')
-
-      graph.pair('2', '3')
-    })
-
-    describe('when the node is unpaired', () => {
-      it('returns false', () => {
-        expect(graph.isPaired('1')).toEqual(false)
-      })
-    })
-
-    describe('when the node is paired', () => {
-      it('returns true', () => {
-        expect(graph.isPaired('2')).toEqual(true)
-        expect(graph.isPaired('3')).toEqual(true)
+        expect(graph.getMateOrFail('a')).toEqual('b')
+        expect(graph.getMateOrFail('b')).toEqual('a')
       })
     })
   })
