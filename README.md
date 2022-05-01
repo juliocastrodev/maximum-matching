@@ -46,11 +46,11 @@ const result = maximumMatching(graph)
 
 # Special cases 🧐
 
-When it is not possible to create a perfect matching (e.g. in graphs with an odd number of nodes), it can be interesting to use the `maximumMatchingGrap` function, which returns a [MatchingGraph](./src/matchings/algorithm/MatchingGraph.ts)
+When it is not possible to create a perfect matching (e.g. in graphs with an odd number of nodes), it can be interesting to use the `maximumMatchingGraph` function, which returns a [MatchingGraph](./src/matchings/algorithm/MatchingGraph.ts)
 
-This is simply a subclass of `UndirectedGraph` from [graphology](https://github.com/graphology/graphology) with useful methods for working with matchings.
+This is simply a subclass of `UndirectedGraph` from [graphology](https://github.com/graphology/graphology) that has useful methods for working with matchings.
 
-In most cases you may not want to use them, but a very interesting one is `.unpairedNodes()`, which lets you know which nodes are unpaired after running the algorithm
+In most cases you may not want to use them, but a very interesting one is `.unpairedNodes()`, which lets you know which nodes are unpaired after running the algorithm.
 
 ```ts
 import { maximumMatchingGraph, MatchingGraph } from 'maximum-matching'
